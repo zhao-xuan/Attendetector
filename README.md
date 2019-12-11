@@ -4,6 +4,7 @@
 This is a nearly finished project on status detection based on facial expression recognition(See https://github.com/WuJie1010/Facial-Expression-Recognition.Pytorch). It is used for checking the status/availability of another person. This could be useful in private video chats or group conference.
 
 > *Note 1*: Current Build only shows the result of the facial recognition detection, it needs further polish to detect whether a person is ***busy/might be busy/might be free/free***.
+
 > *Note 2*: Pytorch can deploy <kbd>cuda()</kbd> in training model/claculating output. This program can automatically choose to use cuda if NVIDIA graphic card is available.
 
 <img src="demo/demo.jpg" alt="Attendetector" style="width:256px;height:auto">
