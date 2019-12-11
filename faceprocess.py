@@ -90,19 +90,19 @@ def facial_processing(raw_img):
         inputs = transform_test(img)
 
         net = VGG('VGG19')
-        #checkpoint = torch.load(os.path.join('FER2013_VGG19', 'PrivateTest_model.t7'), map_location=torch.device('cpu'))
-        #if torch.cuda.is_available():
-        net.cuda()
-        checkpoint = torch.load(os.path.join('FER2013_VGG19', 'PrivateTest_model.t7'), map_location=torch.device('cuda'))
+        if torch.cuda.is_available():
+            net.cuda()
+            checkpoint = torch.load(os.path.join('FER2013_VGG19', 'PrivateTest_model.t7'), map_location=torch.device('cuda'))
+        
+        checkpoint = torch.load(os.path.join('FER2013_VGG19', 'PrivateTest_model.t7'), map_location=torch.device('cpu'))
         net.load_state_dict(checkpoint['net'])
-        #if torch.cuda.is_available():
-        net.cuda()
         net.eval()
 
         ncrops, c, h, w = np.shape(inputs)
 
         inputs = inputs.view(-1, c, h, w)
-        inputs = inputs.cuda()
+        if torch.cuda.is_available():
+            inputs = inputs.cuda()
         inputs = Variable(inputs, volatile=True)
         outputs = net(inputs)
 
@@ -115,36 +115,3 @@ def facial_processing(raw_img):
         print("The Expression is %s" %result_string)
 
         return result_string
-
-"""Video capturing per second"""
-
-cap = cv2.VideoCapture(0)
-
-
-def run():
-    while(True):
-        # Capture frame-by-frame
-        ret, frame = cap.read()
-
-        # Scan frame per second
-        cv2.imwrite('/dev/shm/img.bmp', frame)
-        img = io.imread('/dev/shm/img.bmp')
-        result_string = facial_processing(img)
-
-        font = cv2.FONT_HERSHEY_SIMPLEX 
-        org = (50, 50)  
-        fontScale = 1 
-        color = (255, 0, 0) 
-        thickness = 2
-        preview = cv2.putText(frame, result_string, org, font,  
-                fontScale, color, thickness, cv2.LINE_AA)
-        
-        cv2.imshow('frame', preview)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-        
-run()
-
-# When everything done, release the capture
-cap.release()
-cv2.destroyAllWindows()
